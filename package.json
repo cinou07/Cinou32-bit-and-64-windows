@@ -1,0 +1,49 @@
+{
+  "name": "cinouai-windows",
+  "version": "1.0.0",
+  "description": "CinouAI Windows desktop app",
+  "main": "main.js",
+  "scripts": {
+   "start": "electron .",
+   "build": "electron-builder --win",
+   "build:linux": "electron-builder --linux"
+  },
+  "author": {
+  "name": "Cinou",
+  "email": "cinouchabi07gmail.com"
+},
+"homepage": "https://cinouhome.pages.dev",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "open": "^11.0.4"
+  },
+  "devDependencies": {
+    "electron": "^38.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.cinouai.app",
+    "productName": "CinouAI",
+    "icon": "build/icon.png",
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "google-credentials.json",
+        "to": "google-credentials.json"
+      }
+    ],
+    "files": [
+      "main.js",
+      "preload.js",
+      "www/**/*",
+      "node_modules/express/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "CinouAI-Setup-${version}.${ext}"
+    }
+  }
+}

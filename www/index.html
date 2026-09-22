@@ -1,0 +1,1711 @@
+<DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cinou AI</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" href="favicon.ico">
+
+    <!-- PWA / DEVICE APP (added, standalone — see cinou-device-app.js) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b0c0e">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+    >
+
+        <!-- MARKED -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- HIGHLIGHT.JS -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    >
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+</head>
+
+<body data-theme="dark">
+
+<!-- =========================================================
+     CINOU SIGN-IN GATE (added, standalone — see cinou-auth-gate.js)
+     ========================================================= -->
+
+<div id="cinou-auth-gate" class="modal-backdrop cinou-auth-backdrop">
+
+    <div class="modal-card cinou-auth-card">
+
+        <div class="cinou-auth-logo">
+            <img src="logo.png" alt="CinouAI">
+        </div>
+
+        <h2 class="cinou-auth-title">Sign in to use CinouAI</h2>
+
+        <p class="modal-subtitle">
+            Sign in with Google to sync your chats, settings and avatar —
+            or continue without an account.
+        </p>
+
+        <div id="cinou-google-btn-container" class="cinou-google-btn-container"></div>
+
+        <p class="cinou-auth-message" id="cinou-auth-message"></p>
+
+        <button
+            id="cinou-continue-guest-btn"
+            class="cinou-guest-btn"
+            type="button"
+        >
+            Continue without sign in
+        </button>
+
+    </div>
+
+</div>
+
+<div class="app-layout">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+
+            <button
+                id="toggle-sidebar-btn"
+                class="brand-logo-btn"
+                title="Collapse / Expand Sidebar"
+                aria-label="Collapse or expand sidebar"
+            >
+
+                <img
+                    src="logo.png"
+                    alt="Cinou AI Logo"
+                    class="cinou-logo-img"
+                >
+
+            </button>
+
+            <div class="brand-container">
+
+                <span class="brand-title">
+                    Cinou AI
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- NEW CHAT -->
+
+        <button
+            id="new-chat-btn"
+            class="btn-new-chat"
+            title="New Thread"
+            type="button"
+        >
+
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+            >
+
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+
+            </svg>
+
+            <span class="sidebar-text">
+                New Thread
+            </span>
+
+        </button>
+
+
+        <!-- SEARCH -->
+
+        <div class="sidebar-search-box">
+
+            <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <circle cx="11" cy="11" r="8"></circle>
+
+                <line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"
+                ></line>
+
+            </svg>
+
+            <input
+                type="text"
+                id="search-threads-input"
+                placeholder="Search chats..."
+                class="sidebar-text"
+            >
+
+        </div>
+
+
+        <!-- MODE SHORTCUTS -->
+
+        <div class="sidebar-modes">
+
+            <!-- CHAT -->
+
+            <button
+                class="mode-sidebar-btn active"
+                data-mode="chat"
+                title="Chat AI"
+                type="button"
+            >
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <path
+                        d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                    ></path>
+
+                </svg>
+
+                <span class="sidebar-text">
+                    Chat AI
+                </span>
+
+            </button>
+
+
+            <!-- IMAGE -->
+
+            <button
+                class="mode-sidebar-btn"
+                data-mode="image"
+                title="Create Images"
+                type="button"
+            >
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <rect
+                        x="3"
+                        y="3"
+                        width="18"
+                        height="18"
+                        rx="2"
+                    ></rect>
+
+                    <circle
+                        cx="8.5"
+                        cy="8.5"
+                        r="1.5"
+                    ></circle>
+
+                    <polyline
+                        points="21 15 16 10 5 21"
+                    ></polyline>
+
+                </svg>
+
+                <span class="sidebar-text">
+                    Create Images
+                </span>
+
+            </button>
+
+
+            <!-- VIDEO -->
+
+            <button
+                class="mode-sidebar-btn"
+                data-mode="video"
+                title="Create Videos"
+                type="button"
+            >
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <polygon
+                        points="23 7 16 12 23 17 23 7"
+                    ></polygon>
+
+                    <rect
+                        x="1"
+                        y="5"
+                        width="15"
+                        height="14"
+                        rx="2"
+                    ></rect>
+
+                </svg>
+
+                <span class="sidebar-text">
+                    Create Videos
+                </span>
+
+            </button>
+
+
+            <!-- =================================================
+                 NEW: AI ASSISTANT WITH VOICE
+                 ================================================= -->
+
+            <button
+                class="mode-sidebar-btn"
+                data-mode="assistant"
+                title="AI Assistant with Voice"
+                type="button"
+            >
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <rect
+                        x="9"
+                        y="2"
+                        width="6"
+                        height="12"
+                        rx="3"
+                    ></rect>
+
+                    <path
+                        d="M5 10a7 7 0 0 0 14 0"
+                    ></path>
+
+                    <line
+                        x1="12"
+                        y1="19"
+                        x2="12"
+                        y2="22"
+                    ></line>
+
+                    <line
+                        x1="8"
+                        y1="22"
+                        x2="16"
+                        y2="22"
+                    ></line>
+
+                </svg>
+
+                <span class="sidebar-text">
+                    AI Assistant with Voice
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <!-- HISTORY -->
+
+        <div class="history-container">
+
+            <div class="history-label sidebar-text">
+                Recent Conversations
+            </div>
+
+            <div
+                id="history-list"
+                class="history-list"
+            ></div>
+
+        </div>
+
+
+        <!-- DEVELOPER -->
+
+        <div class="sidebar-dev-box">
+
+            <div
+                class="dev-item"
+                title="Developer Portal"
+            >
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <polyline
+                        points="16 18 22 12 16 6"
+                    ></polyline>
+
+                    <polyline
+                        points="8 6 2 12 8 18"
+                    ></polyline>
+
+                </svg>
+
+                <div class="user-meta sidebar-text">
+
+                    <span class="user-name">
+                        Developer Zone
+                    </span>
+
+                    <span class="user-sub">
+                        Cinou AI Core v1.0
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- USER / SETTINGS -->
+
+        <div class="sidebar-footer">
+
+            <button
+                class="user-card"
+                id="open-settings-btn"
+                title="Open Settings"
+                type="button"
+            >
+
+                <div
+                    class="avatar user-avatar-display"
+                    id="user-avatar-preview"
+                >
+                    C
+                </div>
+
+                <div class="user-meta sidebar-text">
+
+                    <span
+                        class="user-name"
+                        id="user-name-display"
+                    >
+                        User
+                    </span>
+
+                    <span class="user-sub" id="user-plan-label">
+                        Preferences & Themes
+                    </span>
+
+                </div>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN WORKSPACE
+         ===================================================== -->
+
+    <main
+        class="chat-viewport"
+        id="chat-viewport"
+    >
+
+        <!-- TOP NAV -->
+
+        <header class="top-nav">
+
+            <div class="status-indicator">
+
+                <span class="status-dot"></span>
+
+                <select
+                    id="model-selector"
+                    class="model-selector-dropdown"
+                    title="Select AI Model"
+                >
+
+                    <option value="lite">
+                        Cinou Lite
+                    </option>
+
+                    <option value="flash">
+                        Cinou Flash
+                    </option>
+
+                    <option value="pro">
+                        Cinou Pro
+                    </option>
+
+                    <option value="thinking">
+                        Cinou Thinking
+                    </option>
+
+                </select>
+
+
+                <span
+                    id="ai-action-status"
+                    class="badge-action-status hidden"
+                >
+                    Thinking...
+                </span>
+
+
+                <span
+                    id="temp-chat-badge"
+                    class="badge-temp hidden"
+                >
+                    Temporary Mode
+                </span>
+
+            </div>
+
+
+            <!-- TOP OPTIONS -->
+
+            <div class="options-dropdown-container">
+
+                <button
+                    id="top-options-btn"
+                    class="btn-icon"
+                    title="Chat Options"
+                    type="button"
+                >
+
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+
+                    </svg>
+
+                </button>
+
+
+                <div
+                    id="options-menu"
+                    class="options-menu hidden"
+                >
+
+                    <button
+                        id="toggle-temp-chat-btn"
+                        class="menu-item"
+                        type="button"
+                    >
+
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+
+                            <path
+                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                            ></path>
+
+                            <line
+                                x1="1"
+                                y1="1"
+                                x2="23"
+                                y2="23"
+                            ></line>
+
+                        </svg>
+
+                        <span>
+                            Temporary Chat
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        id="delete-current-chat-btn"
+                        class="menu-item danger"
+                        type="button"
+                    >
+
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+
+                            <polyline
+                                points="3 6 5 6 21 6"
+                            ></polyline>
+
+                            <path
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                            ></path>
+
+                        </svg>
+
+                        <span>
+                            Delete Conversation
+                        </span>
+
+                    </button>
+
+
+                    <!-- MEMORY MAP (added) -->
+
+                    <button
+                        id="cinou-open-memory-btn"
+                        class="menu-item"
+                        type="button"
+                    >
+
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+
+                            <circle cx="12" cy="5" r="2.5"></circle>
+                            <circle cx="5" cy="19" r="2.5"></circle>
+                            <circle cx="19" cy="19" r="2.5"></circle>
+                            <line x1="10.5" y1="6.8" x2="6.5" y2="17"></line>
+                            <line x1="13.5" y1="6.8" x2="17.5" y2="17"></line>
+
+                        </svg>
+
+                        <span>
+                            Memory Map
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CINOU MEMORY MAP MODAL (added, standalone — see cinou-memory-map.js) -->
+
+        <div id="cinou-memory-modal" class="modal-backdrop">
+
+            <div class="modal-card cinou-memory-card">
+
+                <div class="modal-header">
+
+                    <div>
+                        <h3>Memory Map</h3>
+                        <p class="modal-subtitle">What CinouAI remembers about you</p>
+                    </div>
+
+                    <button id="cinou-close-memory-btn" class="btn-close" type="button">&times;</button>
+
+                </div>
+
+                <div class="modal-body">
+                    <div id="cinou-memory-grid" class="cinou-memory-grid"></div>
+                    <p id="cinou-memory-empty" class="modal-subtitle hidden">
+                        No memories yet — they'll show up here as CinouAI learns things about you in conversation.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- WORKSPACE BODY -->
+
+        <div
+            class="workspace-body"
+            id="workspace-body"
+        >
+
+            <div
+                id="chat-box"
+                class="chat-box"
+            >
+
+                <div
+                    id="welcome-screen"
+                    class="welcome-screen"
+                >
+
+                    <img
+                        src="logo.png"
+                        alt="Cinou AI Logo"
+                        class="cinou-hero-logo-img"
+                    >
+
+                    
+              <h1 id="dynamic-greeting">
+               The mic is yours, User
+             </h1>
+
+
+
+                    <p id="dynamic-subheading">
+                        Ask questions, generate custom AI images,
+                        or synthesize video directly in your workspace.
+                    </p>
+
+                </div>
+
+            </div>
+        
+            <!-- ============================================================
+     CINOU BUILD
+     ============================================================ -->
+
+<button
+    id="open-build-btn"
+    class="cinou-build-launch"
+    type="button"
+    onclick="document.getElementById('cinou-build').classList.remove('hidden')"
+>
+    ⚡ Build
+</button>
+
+<section id="cinou-build" class="cinou-build hidden">
+
+    <div class="build-header">
+        <div>
+            <div class="build-title">
+                <span class="build-icon">⚡</span>
+                <span>CINOU BUILD</span>
+            </div>
+
+            <p class="build-subtitle">
+                One sentence → Build a real project.
+            </p>
+        </div>
+
+        <button id="build-close" class="build-close" type="button">
+            ×
+        </button>
+    </div>
+
+    <!-- REQUEST -->
+
+    <div class="build-request-card">
+
+        <label for="build-prompt">
+            What do you want Cinou to build?
+        </label>
+
+        <textarea
+            id="build-prompt"
+            class="build-prompt"
+            placeholder="Example: Make me a football game with a player, ball, goals, score and keyboard controls."
+            rows="4"
+        ></textarea>
+
+        <button
+            id="build-project-btn"
+            class="build-main-button"
+            type="button"
+        >
+            ⚡ BUILD PROJECT
+        </button>
+
+    </div>
+
+
+    <!-- WORKSPACE -->
+
+    <div id="build-workspace" class="build-workspace hidden">
+
+        <!-- FILES -->
+
+        <aside class="build-files">
+
+            <div class="build-files-title">
+                PROJECT
+            </div>
+
+            <div id="build-project-name" class="build-project-name">
+                cinou-project
+            </div>
+
+            <button
+                class="build-file active"
+                data-build-file="index.html"
+                type="button"
+            >
+                <span>📄</span>
+                index.html
+            </button>
+
+            <button
+                class="build-file"
+                data-build-file="style.css"
+                type="button"
+            >
+                <span>🎨</span>
+                style.css
+            </button>
+
+            <button
+                class="build-file"
+                data-build-file="app.js"
+                type="button"
+            >
+                <span>⚙️</span>
+                app.js
+            </button>
+
+        </aside>
+
+
+        <!-- CODE -->
+
+        <main class="build-code-area">
+
+            <div class="build-code-header">
+
+                <span id="build-current-file">
+                    index.html
+                </span>
+
+                <button
+                    id="build-copy-code"
+                    type="button"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+            <pre id="build-code">
+Your generated code will appear here...
+            </pre>
+
+        </main>
+
+
+        <!-- PREVIEW -->
+
+        <aside class="build-preview-area">
+
+            <div class="build-preview-header">
+
+                <span>LIVE PREVIEW</span>
+
+                <button
+                    id="build-run-btn"
+                    type="button"
+                >
+                    ▶ RUN
+                </button>
+
+            </div>
+
+            <iframe
+                id="build-preview"
+                title="Cinou Build Preview"
+                sandbox="allow-scripts allow-forms allow-modals"
+            ></iframe>
+
+        </aside>
+
+    </div>
+
+
+    <!-- CHANGE -->
+
+    <div
+        id="build-change-area"
+        class="build-change-area hidden"
+    >
+
+        <div class="build-change-title">
+            ✨ Change your project
+        </div>
+
+        <div class="build-change-row">
+
+            <input
+                id="build-change-input"
+                type="text"
+                placeholder="Example: Make the player faster and add a goalkeeper."
+            >
+
+            <button
+                id="build-change-btn"
+                type="button"
+            >
+                ✨ CHANGE IT
+            </button>
+
+        </div>
+
+    </div>
+                
+
+
+    <!-- STATUS -->
+
+    <div
+        id="build-status"
+        class="build-status"
+    ></div>
+
+</section>
+
+            <!-- CODE PANEL -->
+
+            <aside
+                id="code-panel"
+                class="code-panel hidden"
+            >
+
+                <div class="code-panel-header">
+
+                    <span
+                        id="code-panel-lang"
+                        class="code-panel-lang"
+                    >
+                        Code
+                    </span>
+
+                    <div class="code-panel-actions">
+
+                        <button
+                            type="button"
+                            id="copy-code-btn"
+                            class="code-action-btn"
+                            title="Copy code"
+                        >
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+
+                                <rect
+                                    x="9"
+                                    y="9"
+                                    width="13"
+                                    height="13"
+                                    rx="2"
+                                ></rect>
+
+                                <path
+                                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                                ></path>
+
+                            </svg>
+
+                            <span>
+                                Copy
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="download-code-btn"
+                            class="code-action-btn"
+                            title="Download code"
+                        >
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+
+                                <path
+                                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                                ></path>
+
+                                <polyline
+                                    points="7 10 12 15 17 10"
+                                ></polyline>
+
+                                <line
+                                    x1="12"
+                                    y1="15"
+                                    x2="12"
+                                    y2="3"
+                                ></line>
+
+                            </svg>
+
+                            <span>
+                                Download
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="fullscreen-code-panel-btn"
+                            class="code-action-btn"
+                            title="Toggle fullscreen"
+                        >
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <polyline points="9 21 3 21 3 15"></polyline>
+                                <line x1="21" y1="3" x2="14" y2="10"></line>
+                                <line x1="3" y1="21" x2="10" y2="14"></line>
+
+                            </svg>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="close-code-panel-btn"
+                            class="code-action-btn code-action-close"
+                            title="Close panel"
+                        >
+                            &times;
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <pre class="code-panel-body"><code id="code-panel-content"></code></pre>
+
+            </aside>
+
+
+            <!-- =================================================
+                 NEW: AI ASSISTANT WITH VOICE PANEL
+                 ================================================= -->
+
+            <section
+                id="voice-assistant-panel"
+                class="voice-assistant-panel hidden"
+            >
+
+                <!-- ASSISTANT HEADER -->
+
+                <div class="voice-assistant-header">
+
+                    <div class="voice-assistant-title">
+
+                        <div class="voice-assistant-icon">
+                            🎙️
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                AI Assistant with Voice
+                            </h2>
+
+                            <p>
+                                Talk naturally with Cinou AI
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AI VOICE TOGGLE -->
+
+                    <button
+                        type="button"
+                        id="assistant-voice-toggle"
+                        class="assistant-voice-toggle"
+                        title="Enable or disable AI voice"
+                    >
+                        🔊 Voice On
+                    </button>
+
+                </div>
+
+
+                <!-- ASSISTANT CHAT -->
+
+                <div
+                    id="assistant-chat-box"
+                    class="assistant-chat-box"
+                >
+
+                    <div class="assistant-welcome">
+
+                        <div class="assistant-big-mic">
+                            🎙️
+                        </div>
+
+                        <h2>
+                            Talk to Cinou
+                        </h2>
+
+                        <p>
+                            Press the microphone and speak to your AI assistant.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ASSISTANT INPUT -->
+
+                <div class="assistant-input-area">
+
+                    <div class="assistant-input-card">
+
+                        <textarea
+                            id="assistant-user-input"
+                            placeholder="Talk to Cinou..."
+                            rows="1"
+                        ></textarea>
+
+
+                        <!-- ASSISTANT MICROPHONE -->
+
+                        <button
+                            type="button"
+                            id="assistant-mic-btn"
+                            class="assistant-mic-btn"
+                            aria-label="Start voice input"
+                            title="Start voice input"
+                        >
+
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+
+                                <rect
+                                    x="9"
+                                    y="2"
+                                    width="6"
+                                    height="12"
+                                    rx="3"
+                                ></rect>
+
+                                <path
+                                    d="M5 10a7 7 0 0 0 14 0"
+                                ></path>
+
+                                <line
+                                    x1="12"
+                                    y1="19"
+                                    x2="12"
+                                    y2="22"
+                                ></line>
+
+                                <line
+                                    x1="8"
+                                    y1="22"
+                                    x2="16"
+                                    y2="22"
+                                ></line>
+
+                            </svg>
+
+                        </button>
+
+
+                        <!-- ASSISTANT SEND -->
+
+                        <button
+                            type="button"
+                            id="assistant-send-btn"
+                            class="assistant-send-btn"
+                            aria-label="Send"
+                            title="Send"
+                        >
+
+                            <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.5"
+                            >
+
+                                <path
+                                    d="M5 12h14"
+                                ></path>
+
+                                <path
+                                    d="M12 5l7 7-7 7"
+                                ></path>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- =================================================
+             INPUT
+             ================================================= -->
+
+        <div class="input-container">
+
+            <div class="input-card">
+
+                <textarea
+                    id="user-input"
+                    placeholder="Ask Cinou AI or describe media to generate..."
+                    rows="1"
+                ></textarea>
+
+
+                <!-- VOICE INPUT -->
+
+                <button
+                    type="button"
+                    id="voiceInputBtn"
+                    class="voice-input-btn"
+                    aria-label="Voice input"
+                    title="Voice input"
+                >
+
+                    <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+
+                        <rect
+                            x="9"
+                            y="2"
+                            width="6"
+                            height="12"
+                            rx="3"
+                        ></rect>
+
+                        <path
+                            d="M5 10a7 7 0 0 0 14 0"
+                        ></path>
+
+                        <line
+                            x1="12"
+                            y1="19"
+                            x2="12"
+                            y2="22"
+                        ></line>
+
+                        <line
+                            x1="8"
+                            y1="22"
+                            x2="16"
+                            y2="22"
+                        ></line>
+
+                    </svg>
+
+                </button>
+
+
+                <!-- SEND -->
+
+                <button
+                    type="button"
+                    id="send-btn"
+                    class="btn-send"
+                    aria-label="Send"
+                    title="Send"
+                >
+
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                    >
+
+                        <path
+                            d="M5 12h14"
+                        ></path>
+
+                        <path
+                            d="M12 5l7 7-7 7"
+                        ></path>
+
+                    </svg>
+
+                </button>
+
+            </div>
+
+            <p class="input-footnote">
+                Cinou is an AI . He can make mistakes,check the anwers
+            </p>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     SETTINGS MODAL
+     ========================================================= -->
+
+<div
+    id="settings-modal"
+    class="modal-backdrop"
+>
+
+    <div class="modal-card">
+
+        <!-- HEADER -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <h3>
+                    Personalization
+                </h3>
+
+                <p class="modal-subtitle">
+                    Customize your Cinou AI workspace
+                </p>
+
+            </div>
+
+            <button
+                id="close-settings-btn"
+                class="btn-close"
+                title="Close"
+                type="button"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <!-- PROFILE -->
+
+            <div class="setting-group">
+
+                <label>
+                    Profile Nickname
+                </label>
+
+                <input
+                    type="text"
+                    id="username-input"
+                    class="text-field"
+                    placeholder="Enter name..."
+                >
+
+            </div>
+
+
+            <!-- AVATAR -->
+
+            <div class="setting-group">
+
+                <label>
+                    Avatar Letter / Icon
+                </label>
+
+                <input
+                    type="text"
+                    id="user-avatar-input"
+                    class="text-field"
+                    maxlength="2"
+                    placeholder="C"
+                >
+
+                <label class="upload-small-label">
+                    Or upload your own logo
+                </label>
+
+                <input
+                    type="file"
+                    id="avatar-upload-input"
+                    accept="image/*"
+                    class="file-field"
+                >
+
+                <button
+                    id="remove-avatar-btn"
+                    class="btn-secondary hidden"
+                    type="button"
+                >
+                    Remove Custom Logo
+                </button>
+
+            </div>
+
+
+            <!-- THEMES -->
+
+            <div class="setting-group">
+
+                <label>
+                    Color Theme
+                </label>
+
+                <div class="theme-grid">
+
+                    <button
+                        class="theme-chip active"
+                        data-theme="dark"
+                        type="button"
+                    >
+                        Dark Slate
+                    </button>
+
+                    <button
+                        class="theme-chip"
+                        data-theme="oled"
+                        type="button"
+                    >
+                        OLED Pitch Black
+                    </button>
+
+                    <button
+                        class="theme-chip"
+                        data-theme="midnight"
+                        type="button"
+                    >
+                        Midnight Purple
+                    </button>
+
+                    <button
+                        class="theme-chip"
+                        data-theme="light"
+                        type="button"
+                    >
+                        Minimal Light
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- PREMIUM -->
+
+            <div class="setting-group premium-section">
+
+                <label>
+                    Upgrade
+                </label>
+<button
+    id="buy-premium-btn"
+    class="premium-button"
+    type="button"
+    onclick="goToPremium()"
+>
+
+    <span class="premium-star">
+        ★
+    </span>
+
+    <span class="premium-content">
+
+        <strong>
+            Buy Cinou Premium
+        </strong>
+
+        <small>
+            Unlock the full Cinou experience
+        </small>
+
+    </span>
+
+    <span class="premium-arrow">
+        >
+    </span>
+
+</button>
+
+<script>
+function goToPremium() {
+    window.location.href = "file:///C:/Users/pc/Desktop/pay%20site/public/index.html#";
+}
+</script>
+                </button>
+
+            </div>
+
+
+            <!-- PLAN STATUS (added) -->
+
+            <div class="setting-group" id="cinou-plan-status-row">
+
+                <label>
+                    Your Plan
+                </label>
+
+                <div class="cinou-plan-status" id="cinou-plan-status">
+                    <strong id="cinou-plan-name">Free</strong>
+                    <span id="cinou-plan-expiry"></span>
+                </div>
+
+            </div>
+
+
+            <!-- BACKGROUND -->
+
+            <div class="setting-group">
+
+                <label>
+                    Custom Chat Background
+                </label>
+
+                <input
+                    type="file"
+                    id="bg-upload-input"
+                    accept="image/*"
+                    class="file-field"
+                >
+
+                <button
+                    id="remove-bg-btn"
+                    class="btn-secondary hidden"
+                    type="button"
+                >
+                    Remove Custom Wallpaper
+                </button>
+
+            </div>
+
+
+            <!-- ACCENT -->
+
+            <div class="setting-group">
+
+                <label>
+                    Custom Accent Color
+                </label>
+
+                <input
+                    type="color"
+                    id="custom-accent-picker"
+                    value="#6366f1"
+                    class="color-picker-field"
+                >
+
+            </div>
+
+
+            <!-- CUSTOM INSTRUCTIONS -->
+
+            <div class="setting-group">
+
+                <label>
+                    System Prompt Customization
+                </label>
+
+                <textarea
+                    id="custom-instructions"
+                    class="text-field"
+                    rows="3"
+                    placeholder="How should Cinou AI respond?"
+                ></textarea>
+
+            </div>
+
+            <!-- ADMIN ACCESS -->
+
+            <div class="setting-group admin-section">
+
+                <label>
+                    Admin
+                </label>
+
+                <button
+                    type="button"
+                    id="admin-access-btn"
+                    class="btn-secondary admin-access-btn"
+                >
+                    Admin Access
+                </button>
+
+                <div
+                    id="admin-key-prompt"
+                    class="admin-key-prompt hidden"
+                >
+
+                    <input
+                        type="password"
+                        id="admin-key-input"
+                        class="text-field"
+                        placeholder="Enter admin key"
+                        autocomplete="off"
+                    >
+
+                    <button
+                        type="button"
+                        id="admin-key-submit-btn"
+                        class="btn-primary btn-small"
+                    >
+                        Unlock
+                    </button>
+
+                </div>
+
+                <div
+                    id="admin-status"
+                    class="admin-status hidden"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="modal-footer">
+
+            <button
+                id="save-settings-btn"
+                class="btn-primary"
+                type="button"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     APP JAVASCRIPT
+     ========================================================= -->
+
+<script src="app.js"></script>
+
+<script src="https://js.puter.com/v2/"></script>
+
+<!-- new, standalone -->
+<script src="cinou-build-fullscreen.js"></script>
+
+<!-- new, standalone -->
+<script src="cinou-auth-gate.js"></script>
+
+<!-- new, standalone -->
+<script src="cinou-premium-status.js"></script>
+
+<!-- new, standalone -->
+<script src="cinou-quick-options.js"></script>
+
+<!-- new, standalone -->
+<script src="cinou-device-app.js"></script>
+
+</body>
+</html>
