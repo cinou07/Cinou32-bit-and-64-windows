@@ -20,7 +20,7 @@ jobs:
         run: npm install
 
       - name: Build AppImage
-        run: npm run build:linux -- --x64
+        run: npm run build:linux -- --x64 --publish never
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
