@@ -24,15 +24,14 @@ jobs:
         run: npm ci
 
       - name: Build Windows x64 and ia32
-        run: npm run build -- --win --x64 --ia32
+        run: npm run build -- --win --x64 --ia32 --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
-          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
 
-      - name: Upload Windows builds
+      - name: Upload Windows installers
         uses: actions/upload-artifact@v4
         with:
           name: CinouAI-Windows-x64-ia32
           path: |
-            dist/*.exe
-            dist/*.blockmap
+            dist/CinouAI-Setup-*-x64.exe
+            dist/CinouAI-Setup-*-ia32.exe
