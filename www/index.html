@@ -9,6 +9,9 @@
 
     <title>Cinou AI</title>
 
+    <!-- device router: must be first script in <head> — see cinou-device-router.js -->
+    <script src="cinou-device-router.js"></script>
+
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="icon" href="favicon.ico">
@@ -30,7 +33,10 @@
         rel="stylesheet"
     >
 
-        <!-- MARKED -->
+    <!-- GOOGLE IDENTITY SERVICES (added) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- MARKED -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- HIGHLIGHT.JS -->
@@ -1706,6 +1712,9 @@ function goToPremium() {
 
 <!-- new, standalone -->
 <script src="cinou-device-app.js"></script>
+
+<!-- new, standalone (code-panel fullscreen — markup was already there for it) -->
+<script src="fullscreen-button.js"></script>
 
 </body>
 </html>

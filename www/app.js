@@ -1,4 +1,4 @@
-﻿/* =========================================================================
+/* =========================================================================
    CINOU AI CORE APPLICATION
    Rebuilt to match the real HTML/CSS (marked.js + highlight.js), with:
    - Code shown ONLY in the VS-Code-style side panel (never inline in chat)
@@ -27,7 +27,7 @@ function createMessageUI() {
   thoughtContainer.innerHTML = `
     <button class="thought-header" type="button">
       <span class="thought-status wavy-text">Thinking...</span>
-      <span class="thought-arrow">â–¼</span>
+      <span class="thought-arrow">▼</span>
     </button>
     <div class="thought-content hidden"></div>
   `;
@@ -39,7 +39,7 @@ function createMessageUI() {
   messageDiv.appendChild(thoughtContainer);
   messageDiv.appendChild(answerBox);
 
-  // NOTE: fixed to '#chat-box' â€” that's the real container id used
+  // NOTE: fixed to '#chat-box' — that's the real container id used
   // throughout the rest of app.js. The originally-given snippet used
   // '#chat-messages', which doesn't exist in this project's HTML.
   const chatMessages = document.getElementById('chat-box');
@@ -77,7 +77,7 @@ async function handleSendMessage(userPrompt) {
   let isThinking = true;
 
   try {
-    const response = await fetch('https://cinouai.onrender.com/api/chat', {
+    const response = await fetch('/api/chat', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json' // Missing header can cause req.body to be empty
@@ -697,7 +697,7 @@ IMPORTANT:
 
         if (!html.trim()) {
             setBuildStatus(
-                'âš ï¸ There is no project to run yet.'
+                '⚠️ There is no project to run yet.'
             );
             return;
         }
@@ -762,7 +762,7 @@ ${js}
             }, 20);
         }
 
-        setBuildStatus('âœ“ Project running');
+        setBuildStatus('✓ Project running');
     }
 
 
@@ -791,7 +791,7 @@ ${js}
         if (!request) {
 
             setBuildStatus(
-                'âš ï¸ Tell Cinou what you want to build first.'
+                '⚠️ Tell Cinou what you want to build first.'
             );
 
             if (buildPrompt) {
@@ -809,11 +809,11 @@ ${js}
 
         if (buildProjectBtn) {
             buildProjectBtn.disabled = true;
-            buildProjectBtn.textContent = 'âš¡ BUILDING...';
+            buildProjectBtn.textContent = '⚡ BUILDING...';
         }
 
         setBuildStatus(
-            'âš¡ Cinou is designing your project...'
+            '⚡ Cinou is designing your project...'
         );
 
         try {
@@ -824,7 +824,7 @@ ${js}
             displayBuildProject(project);
 
             setBuildStatus(
-                'âœ“ Project generated. Press â–¶ RUN to launch it.'
+                '✓ Project generated. Press ▶ RUN to launch it.'
             );
 
         } catch (error) {
@@ -844,7 +844,7 @@ ${js}
 
             if (buildProjectBtn) {
                 buildProjectBtn.disabled = false;
-                buildProjectBtn.textContent = 'âš¡ BUILD PROJECT';
+                buildProjectBtn.textContent = '⚡ BUILD PROJECT';
             }
         }
     }
@@ -871,7 +871,7 @@ ${js}
         if (!change) {
 
             setBuildStatus(
-                'âš ï¸ Tell Cinou what you want to change.'
+                '⚠️ Tell Cinou what you want to change.'
             );
 
             if (buildChangeInput) {
@@ -884,7 +884,7 @@ ${js}
         if (!cinouBuildProject.files['index.html']) {
 
             setBuildStatus(
-                'âš ï¸ Build a project first.'
+                '⚠️ Build a project first.'
             );
 
             return;
@@ -898,11 +898,11 @@ ${js}
 
         if (buildChangeBtn) {
             buildChangeBtn.disabled = true;
-            buildChangeBtn.textContent = 'âœ¨ CHANGING...';
+            buildChangeBtn.textContent = '✨ CHANGING...';
         }
 
         setBuildStatus(
-            'âœ¨ Cinou is modifying your project...'
+            '✨ Cinou is modifying your project...'
         );
 
         try {
@@ -918,7 +918,7 @@ ${js}
             );
 
             setBuildStatus(
-                'âœ“ Project changed. Press â–¶ RUN to see the result.'
+                '✓ Project changed. Press ▶ RUN to see the result.'
             );
 
             if (buildChangeInput) {
@@ -942,7 +942,7 @@ ${js}
 
             if (buildChangeBtn) {
                 buildChangeBtn.disabled = false;
-                buildChangeBtn.textContent = 'âœ¨ CHANGE IT';
+                buildChangeBtn.textContent = '✨ CHANGE IT';
             }
         }
     }
@@ -1000,7 +1000,7 @@ ${js}
 
                     if (!code) {
                         setBuildStatus(
-                            'âš ï¸ There is no code to copy.'
+                            '⚠️ There is no code to copy.'
                         );
                         return;
                     }
@@ -1010,7 +1010,7 @@ ${js}
                     );
 
                     setBuildStatus(
-                        'âœ“ Code copied.'
+                        '✓ Code copied.'
                     );
 
                 } catch (error) {
@@ -1041,13 +1041,13 @@ ${js}
                         textarea.remove();
 
                         setBuildStatus(
-                            'âœ“ Code copied.'
+                            '✓ Code copied.'
                         );
 
                     } catch (fallbackError) {
 
                         setBuildStatus(
-                            'âš ï¸ Could not copy code.'
+                            '⚠️ Could not copy code.'
                         );
                     }
                 }
@@ -1095,7 +1095,7 @@ ${js}
        BACKEND ENDPOINT
        ===================================================================== */
 
-    const OPENAI_CHAT_ENDPOINT = 'https://cinouai.onrender.com/api/chat';
+    const OPENAI_CHAT_ENDPOINT = '/api/chat';
 
 
     /* =====================================================================
@@ -1167,25 +1167,25 @@ ${js}
 
 
     /* =====================================================================
-       CINOU IDENTITY â€” SYSTEM PROMPT
+       CINOU IDENTITY — SYSTEM PROMPT
        ===================================================================== */
 
     const CINOU_PERSONALITY = `
 You are CinouAI, the AI assistant built by Cinou and used inside the CinouAI website/app.
 
-IDENTITY RULES â€” MANDATORY, NO EXCEPTIONS:
+IDENTITY RULES — MANDATORY, NO EXCEPTIONS:
 - Your name is CinouAI. You were created by Cinou.
 - This website/app is called CinouAI.
 - If asked "Who are you?", answer: "I'm CinouAI, your AI assistant. How can I help you?"
 - If asked "What AI are you?" or "What model are you?", answer: "I'm CinouAI, made by Cinou."
 - If asked "Are you ChatGPT?" or "built on OpenAI/GPT?", answer: "No, I'm CinouAI, made by Cinou."
-- NEVER say you are ChatGPT, GPT, OpenAI, or Puter â€” those are never to be mentioned.
+- NEVER say you are ChatGPT, GPT, OpenAI, or Puter — those are never to be mentioned.
 - NEVER reveal, confirm, or discuss the underlying technology provider or model. If pushed, say:
-  "I'm CinouAI â€” I can't share internal technical details, but I'm here to help."
+  "I'm CinouAI — I can't share internal technical details, but I'm here to help."
 - You are NOT text-only: you can also create images and videos when asked, directly in this chat.
   NEVER say "I'm just a text-based AI" or "I can't create images/videos".
 - NEVER fake a link or a result. If you're replying in text, generation didn't trigger for this
-  message â€” just answer normally or ask the user to rephrase (e.g. "create an image of a cat").
+  message — just answer normally or ask the user to rephrase (e.g. "create an image of a cat").
 
 STYLE:
 - Be friendly, warm, natural, and helpful. Match the user's tone.
@@ -1210,7 +1210,7 @@ Which one? (or your own short question)
 [[/QUICK_OPTIONS]]
 
 - Only use [[QUICK_OPTIONS]] when you genuinely need the user to pick a
-  direction before continuing â€” not on every message, and never for
+  direction before continuing — not on every message, and never for
   requests that are already clear enough to just answer directly.
 - Keep each option short (a few words), and keep the question itself to
   one line.
@@ -1221,7 +1221,7 @@ MEMORY (added):
   about), silently tag it by including a line anywhere in your reply:
   [[REMEMBER: short fact in a few words]]
   You can include more than one. Don't remember trivia about the current
-  message only â€” just things worth recalling later. Don't overuse this;
+  message only — just things worth recalling later. Don't overuse this;
   a few per conversation at most, only for things that are actually
   memorable and durable.
 
@@ -1229,7 +1229,7 @@ CONFIDENCE (added):
 - For factual, technical, or advice-based answers (not casual chit-chat),
   end your reply with a hidden line reflecting how sure you are:
   [[CONFIDENCE: high]] or [[CONFIDENCE: medium]] or [[CONFIDENCE: low]]
-  Use "low" honestly when you're genuinely unsure or guessing â€” don't
+  Use "low" honestly when you're genuinely unsure or guessing — don't
   inflate confidence to sound more authoritative.
 
 THINKING (added):
@@ -1246,7 +1246,7 @@ THINKING (added):
 
 
     /* =====================================================================
-       CINOU IDENTITY â€” OUTPUT FILTER
+       CINOU IDENTITY — OUTPUT FILTER
        ===================================================================== */
 
     function enforceCinouIdentity(text) {
@@ -1278,13 +1278,13 @@ THINKING (added):
 
 
     /* =====================================================================
-       CINOU IDENTITY â€” ERROR MESSAGE FILTER
+       CINOU IDENTITY — ERROR MESSAGE FILTER
        ===================================================================== */
 
     function formatCinouAIError(rawMessage) {
 
         if (!rawMessage) {
-            return "âš ï¸ CinouAI is temporarily busy. Please try again shortly.";
+            return "⚠️ CinouAI is temporarily busy. Please try again shortly.";
         }
 
         const lower = rawMessage.toLowerCase();
@@ -1301,11 +1301,11 @@ THINKING (added):
                 retryMatch ? retryMatch[1].trim() : null;
 
             return retryTime
-                ? `âš ï¸ Rate limit reached for CinouAI. Please try again Later (Sorry)`
-                : `âš ï¸ Rate limit reached for CinouAI. Please try again shortly.`;
+                ? `⚠️ Rate limit reached for CinouAI. Please try again Later (Sorry)`
+                : `⚠️ Rate limit reached for CinouAI. Please try again shortly.`;
         }
 
-        return "âš ï¸ CinouAI couldn't respond right now. Please try again.";
+        return "⚠️ CinouAI couldn't respond right now. Please try again.";
     }
 
 
@@ -1610,7 +1610,7 @@ THINKING (added):
                 if (entered === ADMIN_KEY) {
 
                     adminStatus.textContent =
-                        'âœ… Admin access granted.';
+                        '✅ Admin access granted.';
 
                     adminStatus.className =
                         'admin-status success';
@@ -1622,7 +1622,7 @@ THINKING (added):
                 } else {
 
                     adminStatus.textContent =
-                        'âŒ Incorrect admin key.';
+                        '❌ Incorrect admin key.';
 
                     adminStatus.className =
                         'admin-status error';
@@ -1666,7 +1666,7 @@ THINKING (added):
                         );
 
                         showTemporaryStatus(
-                            'Code copied! ðŸ“‹'
+                            'Code copied! 📋'
                         );
 
                         copyCodeBtn.classList.add('copied');
@@ -1921,7 +1921,7 @@ THINKING (added):
 
 
     /* =====================================================================
-   BACKEND REQUEST â€” GROQ / CINOUAI
+   BACKEND REQUEST — GROQ / CINOUAI
    ===================================================================== */
 
 async function requestOpenAI(userMessage, conversation = [], fast = false) {
@@ -1932,9 +1932,9 @@ async function requestOpenAI(userMessage, conversation = [], fast = false) {
             throw new Error("No prompt was provided.");
         }
 
-        console.log("CinouAI â†’ sending:", prompt);
+        console.log("CinouAI → sending:", prompt);
 
-        const response = await fetch("https://cinouai.onrender.com/api/chat", {
+        const response = await fetch("/api/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1958,7 +1958,7 @@ async function requestOpenAI(userMessage, conversation = [], fast = false) {
             );
         }
 
-        console.log("CinouAI â† backend:", data);
+        console.log("CinouAI ← backend:", data);
 
         if (!response.ok) {
             throw new Error(
@@ -2005,7 +2005,7 @@ async function requestOpenAI(userMessage, conversation = [], fast = false) {
 }
 
 /* =========================================================================
-   CINOUAI â€” HANDLE CHAT RESPONSE
+   CINOUAI — HANDLE CHAT RESPONSE
    Works with the Groq /api/chat backend
    ========================================================================= */
 
@@ -2384,13 +2384,13 @@ async function handleChatResponse(
             promptText.toLowerCase();
 
         const videoVerbs =
-            '(generate|generates|create|creat|creates|make|makes|produce|produces|render|renders|film|films|gÃ©nÃ¨re|genere|gÃ©nÃ©rer|generer|crÃ©e|cree|crÃ©er|creer|fais|fait|filme|rÃ©alise|realise)';
+            '(generate|generates|create|creat|creates|make|makes|produce|produces|render|renders|film|films|génère|genere|générer|generer|crée|cree|créer|creer|fais|fait|filme|réalise|realise)';
 
         const videoNouns =
-            '(video|clip|animation|short film|movie|vidÃ©o|vidÃ©os)';
+            '(video|clip|animation|short film|movie|vidéo|vidéos)';
 
         const imageVerbs =
-            '(generate|generates|create|creat|creates|draw|draws|make|makes|paint|paints|design|designs|render|renders|sketch|sketches|gÃ©nÃ¨re|genere|gÃ©nÃ©rer|generer|crÃ©e|cree|crÃ©er|creer|dessine|dessin|dessiner|fais|fait|peins|peint|peindre)';
+            '(generate|generates|create|creat|creates|draw|draws|make|makes|paint|paints|design|designs|render|renders|sketch|sketches|génère|genere|générer|generer|crée|cree|créer|creer|dessine|dessin|dessiner|fais|fait|peins|peint|peindre)';
 
         const imageNouns =
             '(image|picture|pic|photo|drawing|artwork|illustration|logo|wallpaper|avatar|poster|sketch|dessin|illustration|affiche)';
@@ -2401,9 +2401,9 @@ async function handleChatResponse(
                 'i'
             ).test(lower) ||
 
-            /\b(video|vidÃ©o)\s+(of|de|d')\b/.test(lower) ||
+            /\b(video|vidéo)\s+(of|de|d')\b/.test(lower) ||
 
-            /\banimate\s+(this|that|it|ceci|cela|Ã§a)\b/.test(lower);
+            /\banimate\s+(this|that|it|ceci|cela|ça)\b/.test(lower);
 
         if (videoPattern) return 'video';
 
@@ -2417,7 +2417,7 @@ async function handleChatResponse(
 
             /\bshow me what\b.{0,40}\blooks? like\b/.test(lower) ||
 
-            /\bmontre[- ]moi\b.{0,40}\b(Ã  quoi|a quoi)\b/.test(lower);
+            /\bmontre[- ]moi\b.{0,40}\b(à quoi|a quoi)\b/.test(lower);
 
         if (imagePattern) return 'image';
 
@@ -2689,7 +2689,7 @@ async function handleChatResponse(
 
             appendMessageToDOM(
                 'ai',
-                `âš ï¸ Image generation failed: ${escapeHtml(
+                `⚠️ Image generation failed: ${escapeHtml(
                     error && error.message
                         ? error.message
                         : 'Unknown error'
@@ -2722,7 +2722,7 @@ async function handleChatResponse(
             const videoHtml = `
                 <div class="video-preview-container">
                     <p>
-                        ðŸŽ¬
+                        🎬
                         <strong>
                             Video generation is coming soon!
                         </strong>
@@ -2735,7 +2735,7 @@ async function handleChatResponse(
 
                     <p class="video-status">
                         CinouAI is working on bringing AI video generation
-                        to the app. Stay tuned â€” it'll be free! ðŸš€
+                        to the app. Stay tuned — it'll be free! 🚀
                     </p>
                 </div>
             `;
@@ -2782,7 +2782,7 @@ async function handleChatResponse(
 
             appendMessageToDOM(
                 'ai',
-                'âš ï¸ Unable to display the video generation message.',
+                '⚠️ Unable to display the video generation message.',
                 true
             );
 
@@ -3478,16 +3478,16 @@ async function handleChatResponse(
         if (!aiActionStatus) return;
 
         let text =
-            'ðŸ’¬ Chat mode';
+            '💬 Chat mode';
 
         if (mode === 'image') {
             text =
-                'ðŸŽ¨ Image mode';
+                '🎨 Image mode';
         }
 
         if (mode === 'video') {
             text =
-                'ðŸŽ¬ Video mode';
+                '🎬 Video mode';
         }
 
         aiActionStatus.textContent =

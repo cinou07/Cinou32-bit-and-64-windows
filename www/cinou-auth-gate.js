@@ -1,4 +1,3 @@
-
 /* =========================================================================
    CINOU AUTH GATE — standalone, does not touch app.js
    On load: if the visitor hasn't chosen yet, shows "Sign in to use CinouAI"
@@ -16,6 +15,8 @@
     const CHOICE_KEY = 'cinou_auth_choice';       // 'google' | 'guest'
     const GOOGLE_USER_KEY = 'cinou_google_user';   // verified profile, cached
     const SETTINGS_KEY = 'cinou_user_settings';    // same key app.js uses
+
+    let googleClientId = null;
 
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -53,130 +54,105 @@
     });
 
 
-    /*
-       PATCHED AUTH ONLY:
-       The old web Google Identity Services code has been replaced with
-       the native Electron Google OAuth bridge exposed by preload.js.
-
-       This keeps the rest of the auth gate unchanged.
-    */
     async function initGoogleButton(container, message) {
 
-        if (!container) return;
+        try {
+            const res = await fetch('/api/config');
+            const config = await res.json();
+            googleClientId = config.googleClientId;
+        } catch (err) {
+            console.error('Could not load Google client ID:', err);
+        }
 
-        container.innerHTML = '';
+        if (!googleClientId || googleClientId.includes('YOUR_GOOGLE_CLIENT_ID')) {
+            if (message) message.textContent = 'Google Sign-In is not configured.';
+            return;
+        }
 
-        const button = document.createElement('button');
-
-        button.type = 'button';
-        button.textContent = 'Continue with Google';
-
-        button.style.cssText = `
-            background:#111;
-            color:white;
-            border:0;
-            border-radius:999px;
-            padding:13px 24px;
-            font-size:15px;
-            font-weight:600;
-            cursor:pointer;
-            min-width:230px;
-        `;
-
-        button.addEventListener('click', async () => {
-
-            button.disabled = true;
-            button.textContent = 'Opening Google...';
-
-            if (message) {
-                message.textContent = '';
-            }
-
-            try {
-
-                if (
-                    !window.cinouAuth ||
-                    typeof window.cinouAuth.signInWithGoogle !== 'function'
-                ) {
-                    throw new Error(
-                        'Google authentication is unavailable.'
-                    );
-                }
-
-                const result =
-                    await window.cinouAuth.signInWithGoogle();
-
-                if (!result || !result.success || !result.user) {
-                    throw new Error(
-                        result?.error ||
-                        'Google sign-in failed.'
-                    );
-                }
-
-                const user = result.user;
-
-                const email = (user.email || '').toLowerCase();
-
-                if (!email) {
-                    throw new Error(
-                        "Google didn't return an email for this account."
-                    );
-                }
-
-                const profile = {
-                    id: user.id,
-                    email,
-                    name: user.name || email,
-                    picture: user.picture || '',
-                    emailVerified: user.emailVerified === true
-                };
-
-                localStorage.setItem(
-                    CHOICE_KEY,
-                    'google'
-                );
-
-                localStorage.setItem(
-                    GOOGLE_USER_KEY,
-                    JSON.stringify(profile)
-                );
-
-                applyProfileToUI(profile);
-
-                const gate =
-                    document.getElementById('cinou-auth-gate');
-
-                if (gate) {
-                    gate.classList.remove('active');
-                }
-
-            } catch (err) {
-
-                console.error(
-                    'CinouAI Google sign-in:',
-                    err
-                );
-
-                if (message) {
-                    message.textContent =
-                        err.message ||
-                        'Google sign-in failed. Please try again.';
-                }
-
-                button.disabled = false;
-                button.textContent = 'Continue with Google';
-            }
-        });
-
-        container.appendChild(button);
+        waitForGoogleScript(container, message);
     }
 
 
-    /*
-       Merges the Google profile into the same localStorage object app.js
+    function waitForGoogleScript(container, message) {
+
+        if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+            setTimeout(() => waitForGoogleScript(container, message), 250);
+            return;
+        }
+
+        google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: (response) => handleCredential(response, message)
+        });
+
+        if (container) {
+            google.accounts.id.renderButton(container, {
+                theme: 'filled_black',
+                size: 'large',
+                shape: 'pill',
+                text: 'continue_with',
+                width: 300
+            });
+        }
+    }
+
+
+    function handleCredential(response, message) {
+
+        let payload;
+        try {
+            payload = decodeJwtPayload(response.credential);
+        } catch (err) {
+            if (message) message.textContent = 'Google sign-in failed. Please try again.';
+            return;
+        }
+
+        const email = (payload.email || '').toLowerCase();
+
+        if (!email) {
+            if (message) message.textContent = "Google didn't return an email for this account.";
+            return;
+        }
+
+        const user = {
+            id: payload.sub,
+            email,
+            name: payload.name || email,
+            picture: payload.picture || '',
+            emailVerified: payload.email_verified === true
+        };
+
+        localStorage.setItem(CHOICE_KEY, 'google');
+        localStorage.setItem(GOOGLE_USER_KEY, JSON.stringify(user));
+
+        applyProfileToUI(user);
+
+        const gate = document.getElementById('cinou-auth-gate');
+        if (gate) gate.classList.remove('active');
+    }
+
+
+    /* Decodes a JWT's payload (base64url) without verifying its signature.
+       NOTE: not cryptographically verified — good enough to render a name/
+       avatar in the UI, not enough to gate anything sensitive server-side.
+       For that, switch back to POSTing response.credential to a verified
+       server endpoint (e.g. /api/auth/google using google-auth-library). */
+    function decodeJwtPayload(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    }
+
+
+    /* Merges the Google profile into the same localStorage object app.js
        reads on load, and updates the DOM directly so it shows immediately
-       without needing a page reload.
-    */
+       without needing a page reload. */
     function applyProfileToUI(user) {
 
         const settings = safeParse(localStorage.getItem(SETTINGS_KEY)) || {};
@@ -216,4 +192,3 @@
     }
 
 })();
-
