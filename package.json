@@ -29,12 +29,6 @@
     "directories": {
       "output": "dist"
     },
-    "extraResources": [
-      {
-        "from": "google-credentials.json",
-        "to": "google-credentials.json"
-      }
-    ],
     "files": [
       "main.js",
       "preload.js",
@@ -44,7 +38,7 @@
     ],
     "win": {
       "target": "nsis",
-      "artifactName": "CinouAI-Setup-${version}.${ext}"
+      "artifactName": "CinouAI-Setup-${version}-${arch}.${ext}"
     },
     "linux": {
       "target": [
