@@ -28,10 +28,16 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
-      - name: Upload Windows installers
+      - name: Upload Windows x64
         uses: actions/upload-artifact@v4
         with:
-          name: CinouAI-Windows-x64-ia32
-          path: |
-            dist/CinouAI-Setup-*-x64.exe
-            dist/CinouAI-Setup-*-ia32.exe
+          name: CinouAI-Windows-x64
+          path: dist/CinouAI-Setup-*-x64.exe
+          if-no-files-found: error
+
+      - name: Upload Windows 32-bit
+        uses: actions/upload-artifact@v4
+        with:
+          name: CinouAI-Windows-ia32
+          path: dist/CinouAI-Setup-*-ia32.exe
+          if-no-files-found: error
